@@ -16,6 +16,7 @@ public enum PopupCollectionViewControllerOption {
     case cellWidth(CGFloat)
     case contentEdgeInsets(CGFloat)
     case cornerRadius(CGFloat)
+    case scrollToClose(Bool)
 }
 
 public protocol PopupViewCellDelegate {
@@ -58,6 +59,7 @@ open class PopupCollectionViewController: UIViewController {
     fileprivate var cellWidth: CGFloat = 300
     fileprivate var contentEdgeInsets: CGFloat = 24
     fileprivate var cornerRadius: CGFloat = 2
+    fileprivate var scrollToClose: Bool = true
     open var closedHandler: (() -> Void)?
 
     fileprivate var popupCollectionView: UICollectionView! {
@@ -181,6 +183,8 @@ private extension PopupCollectionViewController {
                 self.contentEdgeInsets = value
             case .cornerRadius(let value):
                 self.cornerRadius = value
+            case .scrollToClose(let value):
+                self.scrollToClose = value
             }
         }
     }
@@ -349,6 +353,8 @@ private extension PopupCollectionViewController {
 extension PopupCollectionViewController: UIScrollViewDelegate {
 
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard self.scrollToClose else { return }
+        
         let delta = self.defaultContentOffset.y - scrollView.contentOffset.y
         if delta > 50 {
             self.baseScrollView.contentInset.top = -scrollView.contentOffset.y
