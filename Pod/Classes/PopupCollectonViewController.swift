@@ -15,6 +15,7 @@ public enum PopupCollectionViewControllerOption {
     case popupHeight(CGFloat)
     case cellWidth(CGFloat)
     case contentEdgeInsets(CGFloat)
+    case cornerRadius(CGFloat)
 }
 
 public protocol PopupViewCellDelegate {
@@ -56,6 +57,7 @@ open class PopupCollectionViewController: UIViewController {
     fileprivate var popupHeight: CGFloat = 400
     fileprivate var cellWidth: CGFloat = 300
     fileprivate var contentEdgeInsets: CGFloat = 24
+    fileprivate var cornerRadius: CGFloat = 2
     open var closedHandler: (() -> Void)?
 
     fileprivate var popupCollectionView: UICollectionView! {
@@ -145,6 +147,18 @@ open class PopupCollectionViewController: UIViewController {
     @objc func didTapGesture(_ sender: UITapGestureRecognizer) {
         self.dismiss(completion: nil)
     }
+    
+    public func scrollToNextPage() {
+        let center = popupCollectionView.convert(self.view.center, from: self.view)
+        guard let indexPath = popupCollectionView.indexPathForItem(at: center), indexPath.row < childViewControllers.count - 1 else { return }
+        popupCollectionView.scrollToItem(at: IndexPath(row: indexPath.row + 1, section: indexPath.section), at: .centeredHorizontally, animated: true)
+    }
+    
+    public func scrollToPreviousPage() {
+        let center = popupCollectionView.convert(self.view.center, from: self.view)
+        guard let indexPath = popupCollectionView.indexPathForItem(at: center), indexPath.row > 0 else { return }
+        popupCollectionView.scrollToItem(at: IndexPath(row: indexPath.row - 1, section: indexPath.section), at: .centeredHorizontally, animated: true)
+    }
 }
 
 private extension PopupCollectionViewController {
@@ -165,6 +179,8 @@ private extension PopupCollectionViewController {
                 self.cellWidth = value
             case .contentEdgeInsets(let value):
                 self.contentEdgeInsets = value
+            case .cornerRadius(let value):
+                self.cornerRadius = value
             }
         }
     }
@@ -350,7 +366,7 @@ extension PopupCollectionViewController: UICollectionViewDataSource {
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UICollectionViewCell", for: indexPath)
-        cell.layer.cornerRadius = 2
+        cell.layer.cornerRadius = self.cornerRadius
         cell.layer.masksToBounds = true
 
         let vc = self.childViewControllers[indexPath.row]
