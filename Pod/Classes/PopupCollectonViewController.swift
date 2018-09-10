@@ -93,6 +93,8 @@ open class PopupCollectionViewController: UIViewController {
         self.baseScrollView.frame = self.view.frame
         self.baseScrollView.contentInset.top = layout.origin(self.popupCollectionView).y
         self.defaultContentOffset.y = -self.baseScrollView.contentInset.top
+        
+        self.baseScrollView.isScrollEnabled = scrollToClose
     }
 
     override open var supportedInterfaceOrientations : UIInterfaceOrientationMask {
