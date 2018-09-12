@@ -155,13 +155,21 @@ open class PopupCollectionViewController: UIViewController {
     public func scrollToNextPage() {
         let center = popupCollectionView.convert(self.view.center, from: self.view)
         guard let indexPath = popupCollectionView.indexPathForItem(at: center), indexPath.row < childViewControllers.count - 1 else { return }
-        popupCollectionView.scrollToItem(at: IndexPath(row: indexPath.row + 1, section: indexPath.section), at: .centeredHorizontally, animated: true)
+        let newIndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
+        
+        popupCollectionView.scrollToItem(at: newIndexPath, at: .centeredHorizontally, animated: true)
+        let vc = self.childViewControllers[newIndexPath.row]
+        (vc as? PopupViewCellDelegate)?.popupCollectionViewControllerDidShow(self)
     }
     
     public func scrollToPreviousPage() {
         let center = popupCollectionView.convert(self.view.center, from: self.view)
         guard let indexPath = popupCollectionView.indexPathForItem(at: center), indexPath.row > 0 else { return }
-        popupCollectionView.scrollToItem(at: IndexPath(row: indexPath.row - 1, section: indexPath.section), at: .centeredHorizontally, animated: true)
+        let newIndexPath = IndexPath(row: indexPath.row - 1, section: indexPath.section)
+        
+        popupCollectionView.scrollToItem(at: newIndexPath, at: .centeredHorizontally, animated: true)
+        let vc = self.childViewControllers[newIndexPath.row]
+        (vc as? PopupViewCellDelegate)?.popupCollectionViewControllerDidShow(self)
     }
 }
 
