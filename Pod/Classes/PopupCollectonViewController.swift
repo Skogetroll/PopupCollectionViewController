@@ -11,6 +11,7 @@ import UIKit
 public enum PopupCollectionViewControllerOption {
     case layout(PopupCollectionViewController.PopupLayout)
     case animation(PopupCollectionViewController.PopupAnimation)
+    case animationSpeedFactor(TimeInterval)
     case overlayLayer(CALayer)
     case popupHeight(CGFloat)
     case cellWidth(CGFloat)
@@ -50,6 +51,7 @@ open class PopupCollectionViewController: UIViewController {
     // Custom Property
     fileprivate var layout: PopupLayout = .center
     fileprivate var animation: PopupAnimation = .slideUp
+    fileprivate var animationSpeedFactor: TimeInterval = 1.0
     fileprivate lazy var overlayLayer: CALayer = {
         let layer = CALayer()
         layer.backgroundColor = UIColor(white: 0.0, alpha: 0.4).cgColor
@@ -121,6 +123,11 @@ open class PopupCollectionViewController: UIViewController {
     }
 
     open func presentViewControllers(_ viewControllers: [UIViewController], options: [PopupCollectionViewControllerOption]? = nil, completion: (() -> Void)?) {
+        for viewController in self.childViewControllers {
+            viewController.view.removeFromSuperview()
+            viewController.removeFromParentViewController()
+        }
+        
         for viewController in viewControllers {
             self.addChildViewController(viewController)
         }
@@ -183,6 +190,8 @@ private extension PopupCollectionViewController {
                 self.layout = value
             case .animation(let value):
                 self.animation = value
+            case .animationSpeedFactor(let value):
+                self.animationSpeedFactor = value
             case .overlayLayer(let value):
                 self.overlayLayer = value
             case .popupHeight(let value):
@@ -288,7 +297,7 @@ private extension PopupCollectionViewController {
         self.popupCollectionView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
 
         UIView.animate(
-            withDuration: 0.3, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: [], animations: {
+            withDuration: 0.3 * animationSpeedFactor, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: [], animations: {
                 self.popupCollectionView.alpha = 1.0
                 self.view.alpha = 1.0
                 self.popupCollectionView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
@@ -299,7 +308,7 @@ private extension PopupCollectionViewController {
 
     func fadeOut(_ completion: @escaping () -> Void) {
         UIView.animate(
-            withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: [], animations: {
+            withDuration: 0.3 * animationSpeedFactor, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: [], animations: {
                 self.popupCollectionView.alpha = 0.0
                 self.view.alpha = 0.0
                 self.popupCollectionView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
@@ -315,7 +324,7 @@ private extension PopupCollectionViewController {
         self.baseScrollView.contentOffset.y = -UIScreen.main.bounds.height
 
         UIView.animate(
-            withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
+            withDuration: 0.5 * animationSpeedFactor, delay: 0.0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
                 self.view.alpha = 1.0
                 self.baseScrollView.contentOffset.y = -layout.origin(self.popupCollectionView).y
                 self.defaultContentOffset = self.baseScrollView.contentOffset
@@ -326,7 +335,7 @@ private extension PopupCollectionViewController {
 
     func slideOut(_ completion: @escaping () -> Void) {
         UIView.animate(
-            withDuration: 0.5, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
+            withDuration: 0.5 * animationSpeedFactor, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
                 self.popupCollectionView.frame.origin.y = UIScreen.main.bounds.height
                 self.view.alpha = 0.0
             }, completion: { isFinished in
@@ -340,7 +349,7 @@ private extension PopupCollectionViewController {
         self.view.alpha = 0.0
         self.baseScrollView.contentOffset.x = -UIScreen.main.bounds.width
         UIView.animate(
-            withDuration: 0.5, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
+            withDuration: 0.5 * animationSpeedFactor, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
                 self.view.alpha = 1.0
                 self.baseScrollView.contentOffset.x = -layout.origin(self.popupCollectionView).x
                 self.defaultContentOffset = self.baseScrollView.contentOffset
@@ -351,7 +360,7 @@ private extension PopupCollectionViewController {
 
     func slideLeftOut(_ completion: @escaping () -> Void) {
         UIView.animate(
-            withDuration: 0.5, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
+            withDuration: 0.5 * animationSpeedFactor, delay: 0.1, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.0, options: .curveLinear, animations: {
                 self.popupCollectionView.frame.origin.x = UIScreen.main.bounds.width
                 self.view.alpha = 0.0
             }, completion: { isFinished in
