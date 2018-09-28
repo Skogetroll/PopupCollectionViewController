@@ -18,6 +18,7 @@ public enum PopupCollectionViewControllerOption {
     case contentEdgeInsets(CGFloat)
     case cornerRadius(CGFloat)
     case scrollToClose(Bool)
+    case horizontalScrollEnabled(Bool)
 }
 
 public protocol PopupViewCellDelegate {
@@ -62,6 +63,7 @@ open class PopupCollectionViewController: UIViewController {
     fileprivate var contentEdgeInsets: CGFloat = 24
     fileprivate var cornerRadius: CGFloat = 2
     fileprivate var scrollToClose: Bool = true
+    fileprivate var horizontalScrollEnabled: Bool = true
     open var closedHandler: (() -> Void)?
 
     fileprivate var popupCollectionView: UICollectionView! {
@@ -204,6 +206,8 @@ private extension PopupCollectionViewController {
                 self.cornerRadius = value
             case .scrollToClose(let value):
                 self.scrollToClose = value
+            case .horizontalScrollEnabled(let value):
+                self.horizontalScrollEnabled = value
             }
         }
     }
@@ -213,6 +217,7 @@ private extension PopupCollectionViewController {
         self.popupCollectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: self.collectionViewLayout)
         self.view.isHidden = true
         self.view.frame = UIScreen.main.bounds
+        self.popupCollectionView.isScrollEnabled = horizontalScrollEnabled
 
         self.baseScrollView.isScrollEnabled = true
         self.baseScrollView.alwaysBounceHorizontal = false
